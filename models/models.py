@@ -3,28 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 db= SQLAlchemy()
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50), nullable=False, unique=True)
-    username = db.Column(db.String(100), nullable=True, unique=True)
-    name = db.Column(db.String(50), nullable=True)
-    bio = db.Column(db.String(50), nullable=True)
-    password = db.Column(db.String(10), nullable=False)
-    profile = db.Column(db.String(10), nullable=False)
-   
-
-    def __repr__(self):
-        return "<User %r>" % self.password
-    
-    def serialize(self):
-        return {
-            "id":self.id,
-            "name": self.name,
-            "email":self.email,
-            "username":self.username,
-            "profile":self.profile,
-        }
-
 class Movie(db.Models):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=True)
