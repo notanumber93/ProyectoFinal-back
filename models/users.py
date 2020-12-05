@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
+from settings import *
+db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +23,7 @@ class User(db.Model):
             "email": self.email,
             "userName": self.userName,
             "isAdmin": self.isAdmin,
+            "bio": self.bio,
         }
 
     def add_user(_firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
@@ -30,10 +32,10 @@ class User(db.Model):
         db.session.commit()
     
     def get_user(_id):
-        return User.query.filter_by(id=_id).first()
+        return [User.serialize(User.query.filter_by(id=_id).first())]
     
     def get_all_users():
-        return User.query.all()
+        return [User.serialize(user) for user in User.query.all()]
     
     def update_user(_id, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
         user_to_update = User.query.filter_by(id=_id).first()

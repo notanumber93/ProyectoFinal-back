@@ -1,22 +1,6 @@
-import os
-import re
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-from flask_bcrypt import Bcrypt
-# from models import db, User, Category
-from models.users import *
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] ="mysql://ub5z2hnzlwc5frzq:Tlut4m6TTQDFybjxyeMs@bodwcrfuz4icrcbxrqjn-mysql.services.clever-cloud.com:3306/bodwcrfuz4icrcbxrqjn"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["DEBUG"] = True
-app.config["ENV"] = "development"
-app.config["SECRET KEY"] = "secret key"
-app.config["JWT_SECRET_KEY"] = "encrypt"
+from models import User
+from settings import *
+import datetime
 
 db.init_app(app)
 Migrate(app, db)
@@ -52,64 +36,93 @@ def signup():
 
     return jsonify({"success": True})
 
+@app.route('/login', methods=["POST"])
+def login():
+    email_reg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+    email = None
+    userName = None
 
+    if not request.is_json:
+        return jsonify({"msg": "El body o contenido esta vacio"}), 400
+    
+    password = request.json.get("userPass", None)
+
+    if not request.json.get("userLogin"):
+        return jsonify({"msg": "Falta enviar el nombre de usuario o correo"}), 400
+
+    if not password:
+        return jsonify({"msg": "Falta enviar la contraseña"}), 400
+
+    if re.search(email_reg, request.json.get("userLogin")):
+        email = request.json.get("userLogin")
+        user = User.query.filter_by(email=email).first()
+    else:
+        userName = request.json.get("userLogin")
+        user = User.query.filter_by(userName=userName).first()
+
+    if not user:
+        return jsonify({"msg": "Este usuario no esta registrado"}), 404
+
+    identity = user.email
+    expires = datetime.timedelta(days=7)
+
+    if bcrypt.check_password_hash(user.userPass, password):
+        access_token = create_access_token(identity=identity, expires_delta=expires)
+        return jsonify({
+            "access_token": access_token,
+            "user": user.serialize(),
+            "success": True
+        }), 200
+    else:
+        return jsonify({"msg": "Contraseña erronea"}), 400
 
 @app.route('/users', methods=["GET"])
+@jwt_required
 def get_all_users():
     return jsonify({"Users": User.get_all_users()})
 
 @app.route('/users/<int:id>', methods=["GET"])
+@jwt_required
 def get_user_by_id(id):
     user = User.get_user(id)
     return jsonify(user)
 
-# @app.route('/user/<int:id>',methods["GET", "DELETE","PUT"])
-# @app.route('/user',methods=["POST","GET"])
-# def user(id=None):
-#     if id is not None:
-#         if request.method == 'GET':
-#             user= User.query.all()
-#             return jsonify(user.serialize()), 200
-
-#     if request.method == 'PUT':
-#         user = User.query.get(id)
-#         user.bio = request.json.get("bio")
-#         db.session.commit()
-#         return jsonify({"msg": "User updated"}), 200
+@app.route('/users/<int:id>', methods=["PUT"])
+@jwt_required
+def update_user(id):
+    email_reg = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+    password_reg = '^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$'
     
-#     if request.method == 'DELETE':
-#         user = User.query.get(id)
-#         db.session.delete(user)
-#         db.session.commit()
+    if request.json.get("email") is not None:
+        if re.search(email_reg, request.json.get("email")):
+            _email = request.json.get("email")
+        else:
+            return jsonify({"msg": "Este correo no tiene formato valido"}), 401
 
-
-#         return jsonify({"msg": "User deleted"}), 200
-
-#     elif request.method == 'POST':
-#         user = User()
-#         user.name = request.json.get("name")
-#         user.email = request.json.get("email")
-#         user.password = request.json.get("password")
-#         db.session.add(user)
-#         db.session.commit()
-#         return jsonify(user,serialize()), 200
-
-#     else:
-#         users = User.query.all()
-#         users = list(map(lambda category:users.serialize(), categories))
-#         return jsonify({"users":users}), 200
-
-
-    if __name__ == "__main__":
-        manager.run()
+    if request.json.get("userPass") is not None:
+        if re.search(password_reg, request.json.get("userPass")):
+            password_hash = bcrypt.generate_password_hash(request.json.get("userPass"))
+            _userPass = password_hash
+        else:
+            return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
     
-    
+    _email = request.json.get("email") if not request.json.get("email") else _email
+    _userPass = request.json.get("userPass") if not request.json.get("userPass") else _userPass
+    _userName = request.json.get("userName", None)
+    _firstName = request.json.get("firstName", None)
+    _lastName = request.json.get("lastName", None)
+    _bio = request.json.get("bio", None)
+    _isAdmin = request.json.get("isAdmin", None)
 
-        
+    User.update_user(id, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin)
 
+    return jsonify({"success": True})
 
+@app.route('/users/<int:id>', methods=["DELETE"])
+@jwt_required
+def delete_user(id):
+    User.delete_user(id)
+    return jsonify({"success": True})
 
-
-
-
-
+if __name__ == "__main__":
+    manager.run()
