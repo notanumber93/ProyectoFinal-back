@@ -51,3 +51,4 @@ class User(db.Model):
     def delete_user(_id):
         User.query.filter_by(id=_id).delete()
         db.session.commit()
+    
