@@ -38,13 +38,13 @@ def signup():
         return jsonify({"msg": "Este correo no tiene formato valido"}), 401
 
     if re.search(password_reg, request.json.get("userPass")):
+        _userName = request.json.get("userName")
         password_hash = bcrypt.generate_password_hash(
             request.json.get("userPass"))
         _userPass = password_hash
     else:
         return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
 
-    _userName = request.json.get("userName")
     _firstName = request.json.get("firstName")
     _lastName = request.json.get("lastName")
     _isAdmin = request.json.get("isAdmin")
@@ -169,6 +169,11 @@ def rate_movie():
     db.session.commit()
 
     return jsonify({"msg": "me he guardado exitosamente"})
+
+@app.route('/rates_avgs', methods=["GET"])
+@jwt_required
+def get_rates_avgs():
+    return jsonify({"rates_avgs": Rate.movies_rates_avgs()})
 
 
 if __name__ == "__main__":
