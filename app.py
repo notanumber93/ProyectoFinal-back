@@ -170,6 +170,26 @@ def rate_movie():
 
     return jsonify({"msg": "me he guardado exitosamente"})
 
+@app.route('/favorites/<int:id>', methods=["GET"])
+@jwt_required
+def get_favorites_by_user(id):
+    favorites = Favorites.get_favorites(id)
+    return jsonify(favorites)
+
+@app.route('/favorites/', methods=["POST"])
+@jwt_required
+def add_favorites():
+    if not request.is_json:
+        return jsonify({"msg": "El body o contenido esta vacio"}), 400
+
+    favorites = Favorites()
+    favorites.user_id = request.json.get("user_id", None)
+    favorites.movie_id = request.json.get("movie_id", None)
+
+    db.session.add(favorites)
+    db.session.commit()
+
+    return jsonify({"msg": "Agregado a favoritos exitosamente"})
 
 if __name__ == "__main__":
     manager.run()
