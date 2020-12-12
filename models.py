@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import cast, func, Float
+from decimal import Decimal
 from app import *
 db = SQLAlchemy(app)
 
@@ -97,6 +99,7 @@ class Rate(db.Model):
     
     def serialize(self):
         return {
+            "id": self.id,
             "user_id": self.user_id,
             "movie_id": self.movie_id,
             "rate": self.rate,
@@ -106,6 +109,25 @@ class Rate(db.Model):
         new_rate = Rate(user_id=_idUser, movie_id=_idMovie, rate=_rate)
         db.session.add(new_rate)
         db.session.commit()
+
+    def movies_rates_avgs():
+        #print (db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
+        #            label('rate_avg')).\
+        #            group_by(Rate.movie_id).all())
+        return [MovieRateAVG.serialize(movierateavg) for movierateavg in db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
+                     label('rate_avg')).\
+                     group_by(Rate.movie_id).all()]
+
+
+class MovieRateAVG():
+    movie_id = db.Column(db.String(10), db.ForeignKey('movie.id'),nullable=False)
+    rate_avg = db.Column(db.Float, nullable=False)
+
+    def serialize(self):
+        return {
+            "movie_id": self.movie_id,
+            "rate_avg": self.rate_avg,
+        }
 
     # def to_dict(self):
 #     return{}
