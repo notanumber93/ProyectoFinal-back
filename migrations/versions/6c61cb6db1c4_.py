@@ -42,6 +42,14 @@ def upgrade():
     )
     op.create_index('userName', 'user', ['userName'], unique=True)
     op.create_index('email', 'user', ['email'], unique=True)
+    op.create_table('favorites',
+    sa.Column('id', mysql.INTEGER(display_width=11), autoincrement=True, nullable=False, comment='primary key'),
+    sa.Column('user_id', mysql.INTEGER(display_width=11), autoincrement=False, nullable=True),
+    sa.Column('movie_id', mysql.VARCHAR(length=10), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    mysql_default_charset='utf8',
+    mysql_engine='InnoDB'
+    )
     # ### end Alembic commands ###
 
 
@@ -51,4 +59,5 @@ def downgrade():
     op.drop_index('email', table_name='user')
     op.drop_index('userName', table_name='user')
     op.drop_table('user')
+    op.drop_table('favorites')
     # ### end Alembic commands ###

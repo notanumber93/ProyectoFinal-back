@@ -66,9 +66,10 @@ class Movie(db.Model):
         return "<Movie %r>" % self.name
 
 class Favorites(db.Model):
+    # __tablename__ = 'favorites'
     id = db.Column(db.Integer, primary_key=True)
-    movie_id =  db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
-    user_id = db.Column(db.String(100), db.ForeignKey('movie.id'), nullable=False, unique=True)
+    movie_id =  db.Column(db.String(50), db.ForeignKey('movie.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
     def __repr__(self):
