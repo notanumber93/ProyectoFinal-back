@@ -63,13 +63,13 @@ class Movie(db.Model):
     def __repr__(self):
         return "<Movie %r>" % self.name
 
-# class Favorites(db.Models):
-#     id = db.Column(db.Integer, primary_key=True)
-#     movie_id =  db.Column(db.String(50), nullable=False)
-#     user_id = db.Column(db.String(100), nullable=True, unique=True)
+class Favorites(db.Models):
+    id = db.Column(db.Integer, primary_key=True)
+    movie_id =  db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.String(100), nullable=True, unique=True)
 
-#     def __repr__(self):
-#         return "<Favorites %r>" % self.name
+    def __repr__(self):
+        return "<Favorites %r>" % self.name
 
 # class Comment(Base):
 #     __tablename__ = 'comment'
