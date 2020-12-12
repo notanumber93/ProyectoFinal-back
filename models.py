@@ -70,7 +70,10 @@ class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     movie_id =  db.Column(db.String(50), db.ForeignKey('movie.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
+    user= db.relationship(‘User’,         
+        backref=db.backref(‘favorites’, lazy=True))     
+    movie= db.relationship(‘Movie’,         
+        backref=db.backref(‘favorites’, lazy=True))
 
     def __repr__(self):
         return "<Favorites %r>" % self.name
