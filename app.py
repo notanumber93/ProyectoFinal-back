@@ -147,10 +147,16 @@ def update_user(id):
     return jsonify({"success": True})
 
 
-@app.route('/users/<int:id>', methods=["DELETE"])
+@app.route('/users/<username>', methods=["DELETE"])
 @jwt_required
-def delete_user(id):
-    User.delete_user(id)
+def delete_user(username):
+    if (User.query.filter_by(userName=username).first() is None):
+        return jsonify({
+            "msg": "No hay usuario con ese nombre",
+            "success": False
+            }), 401
+
+    User.delete_user(username)
     return jsonify({"success": True})
 
 
