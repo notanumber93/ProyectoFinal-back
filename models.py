@@ -80,7 +80,11 @@ class Favorites(db.Models):
 
     def add_favorite(self, _movie_id, _user_id):
         new_user = User(movie_id=_movie_id, user_id=_user_id)
-        db.session.add(new_user)
+        db.session.add(new_favorite)
+        db.session.commit()
+    
+    def delete_favorite(_id):
+        Favorite.query.filter_by(id=_id).delete()
         db.session.commit()
 
 # class Comment(Base):
