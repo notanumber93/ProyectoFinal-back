@@ -71,6 +71,18 @@ class Favorites(db.Models):
     def __repr__(self):
         return "<Favorites %r>" % self.name
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "movie_id": self.movie_id,
+            "user_id": self.user_id,
+        }
+
+    def add_favorite(self, _movie_id, _user_id):
+        new_user = User(movie_id=_movie_id, user_id=_user_id)
+        db.session.add(new_user)
+        db.session.commit()
+
 # class Comment(Base):
 #     __tablename__ = 'comment'
 #     id = Column(Integer, primary_key=True)
