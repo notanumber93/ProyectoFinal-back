@@ -65,13 +65,30 @@ class Movie(db.Model):
     def __repr__(self):
         return "<Movie %r>" % self.name
 
-# class Favorites(db.Models):
-#     id = db.Column(db.Integer, primary_key=True)
-#     movie_id =  db.Column(db.String(50), nullable=False)
-#     user_id = db.Column(db.String(100), nullable=True, unique=True)
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    movie_id =  db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.String(100), db.ForeignKey('movie.id'), nullable=False, unique=True)
 
-#     def __repr__(self):
-#         return "<Favorites %r>" % self.name
+
+    def __repr__(self):
+        return "<Favorites %r>" % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "movie_id": self.movie_id,
+            "user_id": self.user_id,
+        }
+
+    def add_favorite(self, _movie_id, _user_id):
+        new_user = User(movie_id=_movie_id, user_id=_user_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+
+    def delete_favorite(_id):
+        Favorite.query.filter_by(id=_id).delete()
+        db.session.commit()
 
 # class Comment(Base):
 #     __tablename__ = 'comment'
