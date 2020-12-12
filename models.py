@@ -65,8 +65,8 @@ class Movie(db.Model):
 
 class Favorites(db.Models):
     id = db.Column(db.Integer, primary_key=True)
-    movie_id =  db.Column(db.String(50), nullable=False)
-    user_id = db.Column(db.String(100), nullable=True, unique=True)
+    movie_id =  db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.String(100), db.ForeignKey('movie.id'), nullable=False, unique=True)
 
     def __repr__(self):
         return "<Favorites %r>" % self.name
@@ -85,7 +85,7 @@ class Rate(db.Model):
     #__tablename__ = 'rate'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    movie_id =  db.Column(db.String(10), db.ForeignKey('movie.id'),nullable=False)
+    movie_id =  db.Column(db.String(10), db.ForeignKey('movie.id'), nullable=False)
     rate = db.Column(db.Integer, nullable=False)
     user= db.relationship('User',
         backref=db.backref('rate', lazy=True))
