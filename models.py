@@ -49,8 +49,8 @@ class User(db.Model):
         user_to_update.isAdmin = _isAdmin if _isAdmin is not None else user_to_update.isAdmin
         db.session.commit()
 
-    def delete_user(_id):
-        User.query.filter_by(id=_id).delete()
+    def delete_user(_username):
+        User.query.filter_by(userName=_username).delete()
         db.session.commit()
 
 class Movie(db.Model):
