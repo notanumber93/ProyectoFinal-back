@@ -2,8 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import cast, func, Float
 from decimal import Decimal
-from app import *
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,18 +28,18 @@ class User(db.Model):
             "bio": self.bio,
         }
 
-    def add_user(_firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
-        new_user = User(firstName=_firstName, lastName=_lastName, email=_email, userName=_userName, userPass=_userPass, bio=_bio, isAdmin=_isAdmin)
+    def add_user(self, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
+        new_user = User(_firstName=_firstName, lastName=_lastName, email=_email, userName=_userName, userPass=_userPass, bio=_bio, isAdmin=_isAdmin)
         db.session.add(new_user)
         db.session.commit()
     
-    def get_user(_id):
+    def get_user(self, _id):
         return [User.serialize(User.query.filter_by(id=_id).first())]
     
-    def get_all_users():
+    def get_all_users(self):
         return [User.serialize(user) for user in User.query.all()]
     
-    def update_user(_id, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
+    def update_user(self, _id, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
         user_to_update = User.query.filter_by(id=_id).first()
         user_to_update.firstName = _firstName if _firstName is not None else user_to_update.firstName
         user_to_update.lastName = _lastName if _lastName is not None else user_to_update.lastName
@@ -51,7 +50,7 @@ class User(db.Model):
         user_to_update.isAdmin = _isAdmin if _isAdmin is not None else user_to_update.isAdmin
         db.session.commit()
 
-    def delete_user(_username):
+    def delete_user(self, _username):
         User.query.filter_by(userName=_username).delete()
         db.session.commit()
 
@@ -92,7 +91,7 @@ class Favorites(db.Model):
         db.session.add(new_favorite)
         db.session.commit()
 
-    def delete_favorite(_id):
+    def delete_favorite(self, _id):
         Favorite.query.filter_by(id=_id).delete()
         db.session.commit()
 
@@ -133,7 +132,7 @@ class Rate(db.Model):
         db.session.add(new_rate)
         db.session.commit()
 
-    def movies_rates_avgs():
+    def movies_rates_avgs(self):
         #print (db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
         #            label('rate_avg')).\
         #            group_by(Rate.movie_id).all())
@@ -142,7 +141,7 @@ class Rate(db.Model):
                      group_by(Rate.movie_id).all()]
 
 
-class MovieRateAVG():
+class MovieRateAVG(db.Model):
     movie_id = db.Column(db.String(10), db.ForeignKey('movie.id'),nullable=False)
     rate_avg = db.Column(db.Float, nullable=False)
 
