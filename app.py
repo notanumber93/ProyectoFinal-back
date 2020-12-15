@@ -1,4 +1,4 @@
-from models import *
+from models import User, Movie, Rate, Favorites, MovieRateAVG
 import datetime
 import os
 import re
