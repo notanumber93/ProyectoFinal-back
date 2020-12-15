@@ -185,8 +185,6 @@ def get_rates_avgs():
 @jwt_required
     
 def get_favorites_by_user(id):
-    favorites = Favorites.query.filter_by(user_id = id).all()
-    favorites = list(map(lambda favorite: favorite.serialize(), favorites))
     return jsonify(favorites)
 
 @app.route('/favorites', methods=["POST"])
