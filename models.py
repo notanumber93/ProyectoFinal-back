@@ -132,23 +132,38 @@ class Rate(db.Model):
         db.session.add(new_rate)
         db.session.commit()
 
-    def movies_rates_avgs(self):
+    def movies_rates_avgs():
         #print (db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
         #            label('rate_avg')).\
         #            group_by(Rate.movie_id).all())
         return [MovieRateAVG.serialize(movierateavg) for movierateavg in db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
                      label('rate_avg')).\
                      group_by(Rate.movie_id).all()]
+    
+    def get_user_rates(_id):
+        return [MovieRate.serialize(movierate) for movierate in db.session.query(Rate.movie_id, cast(Rate.rate, Float).\
+                     label('rate')).filter_by(user_id=_id).all()]
+    
 
 
 class MovieRateAVG(db.Model):
-    movie_id = db.Column(db.String(10), db.ForeignKey('movie.id'),nullable=False)
+    movie_id = db.Column(db.String(10), primary_key=True)
     rate_avg = db.Column(db.Float, nullable=False)
 
     def serialize(self):
         return {
             "movie_id": self.movie_id,
             "rate_avg": self.rate_avg,
+        }
+
+class MovieRate(db.Model):
+    movie_id = db.Column(db.String(10), primary_key=True)
+    rate = db.Column(db.Float, nullable=False)
+
+    def serialize(self):
+        return {
+            "movie_id": self.movie_id,
+            "rate": self.rate,
         }
 
     # def to_dict(self):
