@@ -181,6 +181,11 @@ def rate_movie():
 def get_rates_avgs():
     return jsonify({"rates_avgs": Rate.movies_rates_avgs()})
 
+@app.route('/user_rates/<user_id>', methods=["GET"])
+@jwt_required
+def get_user_rates(user_id):
+    return jsonify({"user_rates": Rate.get_user_rates(user_id)})
+
 @app.route('/favorites/user/<int:id>', methods=["GET"])
 @jwt_required
     
