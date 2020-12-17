@@ -67,12 +67,14 @@ class Movie(db.Model):
 class Favorites(db.Model):
     __tablename__ = 'favorites'
     id = db.Column(db.Integer, primary_key=True)
-    movie_id =  db.Column(db.String(50), db.ForeignKey('movie.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    movie_id =  db.Column(db.String(50), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    poster = db.Column(db.String(250), nullable=False)
+    title = db.Column(db.String(250), nullable=False)
     user= db.relationship('User',         
-        backref=db.backref('favorites', lazy=True))     
-    movie= db.relationship('Movie',         
-        backref=db.backref('favorites', lazy=True))
+        backref=db.backref('favorites', lazy=True, uselist=False))     
+
 
     def __repr__(self):
         return "<Favorites %r>" % self.name
@@ -82,16 +84,19 @@ class Favorites(db.Model):
             "id": self.id,
             "movie_id": self.movie_id,
             "user_id": self.user_id,
+            "year": self.year,
+            "poster": self.poster,
+            "title": self.title,
         }
     
-    def add_favorite(self, _movie_id, _user_id):
-        new_user = User(movie_id=_movie_id, user_id=_user_id)
+    def add_favorite(self, _movie_id, _user_id, year, poster, title):
+        new_user = User(movie_id=_movie_id, user_id=_user_id, year=year, poster=poster, title=title)
         db.session.add(new_favorite)
         db.session.commit()
 
-    # def get_favorites_by_user(self, id):
-    #     favorites = [Favorites.query.filter_by(user_id = id).all()]
-    #     return list(map(lambda favorite: self.serialize(), favorites))
+    def get_favorites_by_user(self, user_id):
+        favorites = [Favorites.query.filter_by(user_id=user_id).all()]
+        return list(map(lambda favorite: self.serialize(), favorites))
 
     def delete_favorite(self, _id):
         Favorite.query.filter_by(id=_id).delete()

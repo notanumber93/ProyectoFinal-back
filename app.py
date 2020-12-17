@@ -121,7 +121,7 @@ def update_user(id):
         if re.search(email_reg, request.json.get("email")):
             _email = request.json.get("email")
         else:
-            return jsonify({"msg": "Este correo no tiene formato válido"}), 401
+            return jsonify({"msg": "Este correo no tiene formato váºlido"}), 401
 
     if request.json.get("userPass") is not None:
         if re.search(password_reg, request.json.get("userPass")):
@@ -186,11 +186,10 @@ def get_rates_avgs():
 def get_user_rates(user_id):
     return jsonify({"user_rates": Rate.get_user_rates(user_id)})
 
-@app.route('/favorites/user/<int:id>', methods=["GET"])
-@jwt_required
-    
-def get_favorites_by_user(id):
-    return jsonify(favorites)
+@app.route('/favorites/user/<user_id>', methods=["GET"])
+@jwt_required    
+def get_favorites_by_user(user_id):
+    return jsonify({"favorites": Favorites.get_favorites_by_user(user_id)})
 
 @app.route('/favorites', methods=["POST"])
 @jwt_required
@@ -201,6 +200,9 @@ def add_favorites():
     favorites = Favorites()
     favorites.user_id = request.json.get("user_id", None)
     favorites.movie_id = request.json.get("movie_id", None)
+    favorites.year = request.json.get("year", None)
+    favorites.poster = request.json.get("poster", None)
+    favorites.title= request.json.get("title", None)
 
     db.session.add(favorites)
     db.session.commit()
