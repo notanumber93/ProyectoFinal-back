@@ -43,7 +43,7 @@ def signup():
             request.json.get("userPass"))
         _userPass = password_hash
     else:
-        return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
+        return jsonify({"msg": "El formato de la password no es valido"}), 401
 
     _firstName = request.json.get("firstName")
     _lastName = request.json.get("lastName")
@@ -71,7 +71,7 @@ def login():
         return jsonify({"msg": "Falta enviar el nombre de usuario o correo"}), 400
 
     if not password:
-        return jsonify({"msg": "Falta enviar la contraseña"}), 400
+        return jsonify({"msg": "Falta enviar la contraseñ"}), 400
 
     if re.search(email_reg, request.json.get("userLogin")):
         email = request.json.get("userLogin")
@@ -95,7 +95,7 @@ def login():
             "success": True
         }), 200
     else:
-        return jsonify({"msg": "Contraseña erronea"}), 400
+        return jsonify({"msg": "Password erronea"}), 400
 
 
 @app.route('/users', methods=["GET"])
@@ -121,7 +121,7 @@ def update_user(id):
         if re.search(email_reg, request.json.get("email")):
             _email = request.json.get("email")
         else:
-            return jsonify({"msg": "Este correo no tiene formato valido"}), 401
+            return jsonify({"msg": "Este correo no tiene formato válido"}), 401
 
     if request.json.get("userPass") is not None:
         if re.search(password_reg, request.json.get("userPass")):
@@ -129,7 +129,7 @@ def update_user(id):
                 request.json.get("userPass"))
             _userPass = password_hash
         else:
-            return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
+            return jsonify({"msg": "El formato de la contraseña no es válido"}), 401
 
     _email = request.json.get(
         "email") if not request.json.get("email") else _email
