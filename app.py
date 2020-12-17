@@ -186,7 +186,7 @@ def get_rates_avgs():
 def get_user_rates(user_id):
     return jsonify({"user_rates": Rate.get_user_rates(user_id)})
 
-@app.route('/favorites/user/<user_id>', methods=["GET"])
+@app.route('/favorites/<user_id>', methods=["GET"])
 @jwt_required    
 def get_favorites_by_user(user_id):
     return jsonify({"favorites": Favorites.get_favorites_by_user(user_id)})

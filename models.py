@@ -95,6 +95,7 @@ class Favorites(db.Model):
         db.session.commit()
 
     def get_favorites_by_user(self, user_id):
+        print ("user id:", user_id)
         favorites = [Favorites.query.filter_by(user_id=user_id).all()]
         return list(map(lambda favorite: self.serialize(), favorites))
 
