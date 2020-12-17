@@ -43,7 +43,7 @@ def signup():
             request.json.get("userPass"))
         _userPass = password_hash
     else:
-        return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
+        return jsonify({"msg": "El formato de la password no es valido"}), 401
 
     _firstName = request.json.get("firstName")
     _lastName = request.json.get("lastName")
@@ -71,7 +71,7 @@ def login():
         return jsonify({"msg": "Falta enviar el nombre de usuario o correo"}), 400
 
     if not password:
-        return jsonify({"msg": "Falta enviar la contraseña"}), 400
+        return jsonify({"msg": "Falta enviar la contraseñ"}), 400
 
     if re.search(email_reg, request.json.get("userLogin")):
         email = request.json.get("userLogin")
@@ -95,7 +95,7 @@ def login():
             "success": True
         }), 200
     else:
-        return jsonify({"msg": "Contraseña erronea"}), 400
+        return jsonify({"msg": "Password erronea"}), 400
 
 
 @app.route('/users', methods=["GET"])
@@ -121,7 +121,7 @@ def update_user(id):
         if re.search(email_reg, request.json.get("email")):
             _email = request.json.get("email")
         else:
-            return jsonify({"msg": "Este correo no tiene formato valido"}), 401
+            return jsonify({"msg": "Este correo no tiene formato váºlido"}), 401
 
     if request.json.get("userPass") is not None:
         if re.search(password_reg, request.json.get("userPass")):
@@ -129,7 +129,7 @@ def update_user(id):
                 request.json.get("userPass"))
             _userPass = password_hash
         else:
-            return jsonify({"msg": "El formato de la contraseña no es valido"}), 401
+            return jsonify({"msg": "El formato de la contraseña no es válido"}), 401
 
     _email = request.json.get(
         "email") if not request.json.get("email") else _email
@@ -186,13 +186,10 @@ def get_rates_avgs():
 def get_user_rates(user_id):
     return jsonify({"user_rates": Rate.get_user_rates(user_id)})
 
-@app.route('/favorites/user/<int:id>', methods=["GET"])
-@jwt_required
-    
-def get_favorites_by_user(id):
-    favorites = Favorites.query.filter_by(user_id = id).all()
-    favorites = list(map(lambda favorite: favorite.serialize(), favorites))
-    return jsonify(favorites)
+@app.route('/favorites/<user_id>', methods=["GET"])
+@jwt_required    
+def get_favorites_by_user(user_id):
+    return jsonify({"favorites": Favorites.get_favorites_by_user(user_id)})
 
 @app.route('/favorites', methods=["POST"])
 @jwt_required
@@ -203,6 +200,9 @@ def add_favorites():
     favorites = Favorites()
     favorites.user_id = request.json.get("user_id", None)
     favorites.movie_id = request.json.get("movie_id", None)
+    favorites.year = request.json.get("year", None)
+    favorites.poster = request.json.get("poster", None)
+    favorites.title= request.json.get("title", None)
 
     db.session.add(favorites)
     db.session.commit()
