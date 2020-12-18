@@ -90,17 +90,16 @@ class Favorites(db.Model):
         }
     
     def add_favorite(self, _movie_id, _user_id, year, poster, title):
-        new_user = User(movie_id=_movie_id, user_id=_user_id, year=year, poster=poster, title=title)
+        new_favorite = Favorites(movie_id=_movie_id, user_id=_user_id, year=year, poster=poster, title=title)
         db.session.add(new_favorite)
         db.session.commit()
 
-    def get_favorites_by_user(self, user_id):
-        print ("user id:", user_id)
-        favorites = [Favorites.query.filter_by(user_id=user_id).all()]
-        return list(map(lambda favorite: self.serialize(), favorites))
+    def get_favorites_by_user(self, idUser):
+        favorites = Favorites.query.filter_by(user_id = idUser).all()
+        return list(map(lambda favorite: favorite.serialize(), favorites))
 
-    def delete_favorite(self, _id):
-        Favorite.query.filter_by(id=_id).delete()
+    def delete_favorite(_id):
+        Favorites.query.filter_by(id=_id).delete()
         db.session.commit()
 
 # class Comment(Base):
