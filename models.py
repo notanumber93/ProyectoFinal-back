@@ -29,7 +29,7 @@ class User(db.Model):
         }
 
     def add_user(_firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
-        new_user = User(_firstName=_firstName, lastName=_lastName, email=_email, userName=_userName, userPass=_userPass, bio=_bio, isAdmin=_isAdmin)
+        new_user = User(firstName=_firstName, lastName=_lastName, email=_email, userName=_userName, userPass=_userPass, bio=_bio, isAdmin=_isAdmin)
         db.session.add(new_user)
         db.session.commit()
     
