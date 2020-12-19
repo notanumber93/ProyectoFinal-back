@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import cast, func, Float
+from sqlalchemy import cast, func, Float, Integer
 from decimal import Decimal
 db = SQLAlchemy()
 
@@ -117,7 +117,10 @@ class Rate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     movie_id =  db.Column(db.String(10), db.ForeignKey('movie.id'),nullable=False)
-    rate = db.Column(db.Integer, nullable=False)
+    rate = db.Column(db.Float, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    poster =  db.Column(db.String(250), nullable=False)
+    title =  db.Column(db.String(250), nullable=False)
     user= db.relationship('User',
         backref=db.backref('rate', lazy=True))
     movie= db.relationship('Movie',
@@ -128,28 +131,33 @@ class Rate(db.Model):
     
     def serialize(self):
         return {
-            "id": self.id,
+            "Id": self.id,
             "user_id": self.user_id,
             "movie_id": self.movie_id,
             "rate": self.rate,
+            "Year": self.year,
+            "Poster": self.poster,
+            "Title": self.title,
         }
     
-    def rate_movie(self,_idUser, _idMovie, _rate):
-        new_rate = Rate(user_id=_idUser, movie_id=_idMovie, rate=_rate)
+    def rate_movie(self,_idUser, _idMovie, _rate, _year, _poster, _title):
+        new_rate = Rate(user_id=_idUser, movie_id=_idMovie, rate=_rate, year=_year, poster=_poster, title=_title)
         db.session.add(new_rate)
         db.session.commit()
 
     def movies_rates_avgs():
+        db.session.commit()
         #print (db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
         #            label('rate_avg')).\
         #            group_by(Rate.movie_id).all())
-        return [MovieRateAVG.serialize(movierateavg) for movierateavg in db.session.query(Rate.movie_id, cast(func.avg(Rate.rate), Float).\
-                     label('rate_avg')).\
-                     group_by(Rate.movie_id).all()]
+        return [Rate.serialize(movierateavg) for movierateavg in db.session.query(cast(0, Integer).label('id'), cast(0, Integer).label('user_id'), Rate.movie_id, cast(func.round(func.avg(Rate.rate), 1), Float).label('rate'), Rate.year, Rate.poster, Rate.title\
+                     ).\
+                     group_by(Rate.movie_id, Rate.year, Rate.poster, Rate.title).all()]
     
     def get_user_rates(_id):
-        return [MovieRate.serialize(movierate) for movierate in db.session.query(Rate.movie_id, cast(Rate.rate, Float).\
-                     label('rate')).filter_by(user_id=_id).all()]
+        db.session.commit()
+        return [Rate.serialize(movierate) for movierate in db.session.query(Rate.id, Rate.user_id, Rate.movie_id, cast(Rate.rate, Float).label('rate'), Rate.year, Rate.poster, Rate.title\
+                     ).filter_by(user_id=_id).all()]
     
 
 
