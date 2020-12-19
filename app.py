@@ -170,6 +170,9 @@ def rate_movie():
     rate.user_id = request.json.get("user_id", None)
     rate.movie_id = request.json.get("movie_id", None)
     rate.rate = request.json.get("rate", None)
+    rate.year = request.json.get("year", None)
+    rate.poster = request.json.get("poster", None)
+    rate.title = request.json.get("title", None)
 
     db.session.add(rate)
     db.session.commit()
