@@ -28,7 +28,7 @@ class User(db.Model):
             "bio": self.bio,
         }
 
-    def add_user(self, _firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
+    def add_user(_firstName, _lastName, _email, _userName, _userPass, _bio, _isAdmin):
         new_user = User(_firstName=_firstName, lastName=_lastName, email=_email, userName=_userName, userPass=_userPass, bio=_bio, isAdmin=_isAdmin)
         db.session.add(new_user)
         db.session.commit()
@@ -50,7 +50,7 @@ class User(db.Model):
         user_to_update.isAdmin = _isAdmin if _isAdmin is not None else user_to_update.isAdmin
         db.session.commit()
 
-    def delete_user(self, _username):
+    def delete_user(_username):
         User.query.filter_by(userName=_username).delete()
         db.session.commit()
 
@@ -95,6 +95,7 @@ class Favorites(db.Model):
         db.session.commit()
 
     def get_favorites_by_user(self, idUser):
+        db.session.commit()
         favorites = Favorites.query.filter_by(user_id = idUser).all()
         return list(map(lambda favorite: favorite.serialize(), favorites))
 
